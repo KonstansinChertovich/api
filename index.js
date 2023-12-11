@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser')
 const mongoose = require('mongoose')
 const router = require('./router/index')
 
-const PORT = process.env.PORT || 6000
+const PORT = process.env.PORT || 8000
 
 const app = express()
 
