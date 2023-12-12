@@ -4,7 +4,9 @@ class ClientService {
     async registrationClient(body) {
         const candidate = await ClientModel.findOne({ username: body.username})
         if(candidate) {
-            throw new Error(`Пользователь ${body.username} уже существует!`)
+            return (res) => {
+                return res.status(400).json({message: `Пользователь ${body.username} уже существует!`})
+            }
         }
         const client = await ClientModel.create(body)
         
