@@ -37,6 +37,24 @@ class UserController {
             })
             .catch((error) => handleError(response, error))
     }
+
+    upLogin(request, response) {
+        const authorization = request.headers.authorization
+        if(!authorization) {
+            return handleError(response,'Не предвиденная ошибка! Пройдите авторизацию!', 401)
+        }
+        const token = request.headers.authorization.split(' ')[1]
+        if(!token) {
+            return handleError(response,'Пользователь не авторизован!', 401)
+        }
+        const verifaiToken = tokenService.validateAccessToken(token)
+        if(!verifaiToken) {
+            return handleError(response,'В доступе отказано! Пройдите авторизацию!', 401)
+        }
+        response
+            .status(201)
+            .json({verifay: 'ok'})
+    }
 }
 
 module.exports = new UserController()
