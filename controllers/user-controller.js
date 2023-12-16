@@ -52,7 +52,7 @@ class UserController {
             return handleError(response,'В доступе отказано! Пройдите авторизацию!', 401)
         }
         response
-            .status(201)
+            .status(200)
             .json({verifay: 'ok'})
     }
 }
