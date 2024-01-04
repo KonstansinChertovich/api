@@ -1,5 +1,6 @@
 const tokenService = require('../service/token-service')
-const ClientModel = require('../models/client-model')
+const ClientModel = require('../models/client-model');
+const clientModel = require('../models/client-model');
 
 handleError = (response, error, code=500) => {
     response.status(code).json({message: error});
@@ -18,49 +19,75 @@ class ClientController {
     }
 
     getAllClient(request, response) {
-        const authorization = request.headers.authorization
-        if(!authorization) {
+        const {accessToken} = request.cookies
+
+        if(!accessToken) {
             return handleError(response,'Не предвиденная ошибка! Пройдите авторизацию!', 401)
         }
-        const token = request.headers.authorization.split(' ')[1]
-        if(!token) {
-            return handleError(response,'Пользователь не авторизован!', 401)
-        }
-        const verifaiToken = tokenService.validateAccessToken(token)
+
+        const verifaiToken = tokenService.validateAccessToken(accessToken)
+        
         if(!verifaiToken) {
             return handleError(response,'В доступе отказано! Пройдите авторизацию!', 401)
         }
         ClientModel
             .find()
             .then(result => {
-                response.status(200)
-                response.json(result)
+                response
+                .status(200)
+                .json(result)
             })
             .catch(() => handleError(response, 'Не предвиденная ошибка! Пройдите авторизацию!'))
     }
 
-    deliteClientId(request, response) {
-        const authorization = request.headers.authorization
-        if(!authorization) {
+    async pagination(request,response) {
+        const {limit} = request.query
+        const totalCountDb = await clientModel.countDocuments()
+        
+        
+
+        response.status(200).json(totalCountDb)
+    }
+
+    async updateClient(request,response) {
+        const clients = await ClientModel.updateMany({firstOpen: true})
+        response
+            .status(201)
+            .json(clients)
+    }
+
+    async clientsPage(request, response) {
+        const {page, limit} = request.query
+        const {accessToken} = request.cookies
+        
+
+        if(!accessToken) {
             return handleError(response,'Не предвиденная ошибка! Пройдите авторизацию!', 401)
         }
-        const token = request.headers.authorization.split(' ')[1]
-        if(!token) {
-            return handleError(response,'Пользователь не авторизован!', 401)
-        }
-        const verifaiToken = tokenService.validateAccessToken(token)
+
+        const verifaiToken = tokenService.validateAccessToken(accessToken)
+        
         if(!verifaiToken) {
             return handleError(response,'В доступе отказано! Пройдите авторизацию!', 401)
         }
+        
+        const countDb = await clientModel.countDocuments()
+
         ClientModel
-            .findOneAndDelete({_id: request.body.id})
+            .find()
+            .skip(((limit || 0) * (page || 0)) - (limit || 0))
+            .limit((limit || 0))
             .then(result => {
-                response.status(200)
-                response.json(result)
+                response
+                .status(200)
+                .json({
+                    clients: result,
+                    countDocument: countDb
+                })
             })
             .catch(() => handleError(response, 'Не предвиденная ошибка! Пройдите авторизацию!'))
-    }
 
+    }
 }
 
 module.exports = new ClientController()

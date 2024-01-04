@@ -32,28 +32,40 @@ class UserController {
                 const tokens = tokenService.generateToken({...userDto});
                 await tokenService.saveToken(userDto.id, tokens.accessToken);
                 response
+                    .header("Access-Control-Allow-Origin", request.headers.origin) 
+                    .header ('Access-Control-Allow-Credentials', true)
                     .status(201)
+                    .cookie('accessToken', tokens.accessToken, {
+                        maxAge: 60 * 60 * 1000, 
+                        httpOnly: true
+                    })
                     .json({...tokens, user: userDto})
             })
             .catch((error) => handleError(response, error))
     }
 
     upLogin(request, response) {
-        const authorization = request.headers.authorization
-        if(!authorization) {
-            return handleError(response,'Не предвиденная ошибка! Пройдите авторизацию!', 401)
-        }
-        const token = request.headers.authorization.split(' ')[1]
-        if(!token) {
+        const {accessToken} = request.cookies
+        if(!accessToken) {
             return handleError(response,'Пользователь не авторизован!', 401)
         }
-        const verifaiToken = tokenService.validateAccessToken(token)
+        const verifaiToken = tokenService.validateAccessToken(accessToken)
         if(!verifaiToken) {
             return handleError(response,'В доступе отказано! Пройдите авторизацию!', 401)
         }
         response
             .status(200)
             .json({verifay: 'ok'})
+    }
+
+    logout(request, response) {
+        const {accessToken} = request.cookies
+        const dataToken = tokenService.remoteToken(accessToken)
+
+        response
+            .status(200)
+            .clearCookie('accessToken')
+            .json(dataToken)
     }
 }
 

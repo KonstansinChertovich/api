@@ -27,6 +27,10 @@ class TokenService {
         const token = await tokenModel.create({user: userId, accessToken})
         return token
     }
+    async remoteToken(accessToken) {
+        const dataToken = await tokenModel.deleteOne({accessToken})
+        return dataToken
+    }
 }
 
 module.exports = new TokenService()
