@@ -4,15 +4,11 @@ const clientController = require('../controllers/client-controller')
 
 const router = new Router()
 
-router.post('/login', userController.login)
-router.post('/logout', userController.logout)
+router.get('/logout', userController.logout)
 router.get('/up-login', userController.upLogin)
-router.put('/update', clientController.updateClient)
-router.post('/new-client', clientController.newClient)
-router.get('/all-client', clientController.getAllClient)
 router.get('/clients', clientController.clientsPage)
-
-
-router.get('/test', clientController.pagination)
+router.post('/login', userController.login)
+router.post('/new-client', clientController.newClient)
+router.put('/update', clientController.updateClient)
 
 module.exports = router

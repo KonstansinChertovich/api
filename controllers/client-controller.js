@@ -18,37 +18,6 @@ class ClientController {
             .catch(() => handleError(response, 'Не предвиденная ошибка!'))
     }
 
-    getAllClient(request, response) {
-        const {accessToken} = request.cookies
-
-        if(!accessToken) {
-            return handleError(response,'Не предвиденная ошибка! Пройдите авторизацию!', 401)
-        }
-
-        const verifaiToken = tokenService.validateAccessToken(accessToken)
-        
-        if(!verifaiToken) {
-            return handleError(response,'В доступе отказано! Пройдите авторизацию!', 401)
-        }
-        ClientModel
-            .find()
-            .then(result => {
-                response
-                .status(200)
-                .json(result)
-            })
-            .catch(() => handleError(response, 'Не предвиденная ошибка! Пройдите авторизацию!'))
-    }
-
-    async pagination(request,response) {
-        const {limit} = request.query
-        const totalCountDb = await clientModel.countDocuments()
-        
-        
-
-        response.status(200).json(totalCountDb)
-    }
-
     async updateClient(request,response) {
         const clients = await ClientModel.updateMany({firstOpen: true})
         response
@@ -59,7 +28,6 @@ class ClientController {
     async clientsPage(request, response) {
         const {page, limit} = request.query
         const {accessToken} = request.cookies
-        
 
         if(!accessToken) {
             return handleError(response,'Не предвиденная ошибка! Пройдите авторизацию!', 401)
