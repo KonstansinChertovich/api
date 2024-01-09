@@ -37,7 +37,7 @@ class UserController {
                     .status(201)
                     .cookie('accessToken', tokens.accessToken, {
                         maxAge: 60 * 60 * 1000, 
-                        httpOnly: true
+                        secure: true
                     })
                     .json({...tokens, user: userDto})
             })
