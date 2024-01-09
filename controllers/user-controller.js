@@ -64,6 +64,8 @@ class UserController {
         const dataToken = tokenService.remoteToken(accessToken)
 
         response
+            .header("Access-Control-Allow-Origin", request.headers.origin) 
+            .header ('Access-Control-Allow-Credentials', true)
             .status(200)
             .clearCookie('accessToken')
             .json(dataToken)
