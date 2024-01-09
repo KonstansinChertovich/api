@@ -13,7 +13,7 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
     credentials: true,
-    origin: ["https://admin-project-psycholog.netlify.app", "https://admin-project-psycholog.netlify.app"],
+    origin: ["https://admin-project-psycholog.netlify.app", "https://project-psycholog.netlify.app"],
     allowedHeaders: ['Content-Type', 'Authorization'],
 }))
 app.use('/api', router)
